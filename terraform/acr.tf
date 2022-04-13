@@ -18,7 +18,7 @@ resource "azurerm_resource_group" "acrrg" {
 resource "azurerm_container_registry" "acr" {
     name                = data.namep_azure_name.acr.result
     resource_group_name = azurerm_resource_group.acrrg.name
-    location            = azurerm_resource_group.aksrg.location
+    location            = var.location
     tags                = local.common_tags
     sku                 = "Basic"
     admin_enabled       = false
