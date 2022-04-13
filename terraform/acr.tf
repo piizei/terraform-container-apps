@@ -21,5 +21,5 @@ resource "azurerm_container_registry" "acr" {
     location            = var.location
     tags                = local.common_tags
     sku                 = "Basic"
-    admin_enabled       = false
+    admin_enabled       = true
 }
