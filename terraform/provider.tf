@@ -9,7 +9,8 @@ provider "namep" {
   }
 }
 
-
+provider "azapi" {
+}
 
 provider "azurerm" {
   features {    
