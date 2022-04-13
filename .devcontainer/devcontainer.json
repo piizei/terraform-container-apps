@@ -4,7 +4,8 @@
     "eamodio.gitlens",
     "davidanson.vscode-markdownlint",
     "hashicorp.terraform",
-    "ms-azuretools.vscode-docker"
+    "ms-azuretools.vscode-docker",
+    "azapi-vscode.azapi"
     ],
     "postCreateCommand": "/bin/bash ./.devcontainer/post-install.sh"
 }
