@@ -6,7 +6,7 @@ terraform {
     }
     namep = {
       source  = "jason-johnson/namep"
-      version = ">=1.0.4"
+      version = ">=1.0.5"
     }
     azapi = {
       source  = "Azure/azapi"
