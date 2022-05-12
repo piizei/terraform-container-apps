@@ -32,7 +32,7 @@ resource "azapi_resource" "container_app_environment" {
   name = "myContainerAppEnv"  
   location = var.location
   parent_id = azurerm_resource_group.cappsrg.id
-  type = "Microsoft.App/managedEnvironments@2022-01-01-preview"
+  type = "Microsoft.App/managedEnvironments@2022-03-01"
   body = jsonencode({
     properties = {
         appLogsConfiguration = {
@@ -44,13 +44,22 @@ resource "azapi_resource" "container_app_environment" {
         }
     }
   })
+  ignore_missing_property = true
 }
+
+
+# Note, the 
+
 
 resource "azapi_resource" "container_app" {
   name = "xyzcontainerapp"  
   location = var.location
+  identity {
+    type = "SystemAssigned"    
+  }
+  
   parent_id = azurerm_resource_group.cappsrg.id
-  type = "Microsoft.App/containerApps@2022-01-01-preview"
+  type = "Microsoft.App/containerApps@2022-03-01"
   body = jsonencode({
     properties = {
       managedEnvironmentId = azapi_resource.container_app_environment.id
@@ -58,16 +67,35 @@ resource "azapi_resource" "container_app" {
         ingress = {
           targetPort = 80
           external = true
+        },
+        registries = [
+        {          
+          server = azurerm_container_registry.acr.login_server
+          username = azurerm_container_registry.acr.admin_username
+          passwordSecretRef = "registry-password"     
         }
-      }
+      ],
+      secrets: [
+        {
+          name = "registry-password"
+          # Todo: Container apps does not yet support Managed Identity connection to ACR
+          value =  azurerm_container_registry.acr.admin_password 
+        }
+      ]
+      },
       template = {
         containers = [
           {
-            image = "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
-            name = "simple-hello-world-container"
+            image = "${azurerm_container_registry.acr.login_server}/helloworld:latest"
+            name = "helloworld"
           }
         ]
       }
     }
   })
+  # This seems to be important for the private registry to work(?)
+  ignore_missing_property = true
+  # Depends on ACR building the image firest
+  depends_on = [azapi_resource.run_acr_task]
+
 }
